@@ -5,9 +5,6 @@
 //  Created by Keshav on 06/04/22.
 //
 
-protocol sendingTimerData {
-    func data(hour:(Int),minutes:Int,second:Int)
-}
 
 
 import UIKit
@@ -16,15 +13,8 @@ class TimerViewModel {
     
     var seconds = 0
     var timer = Timer()
-    var starTimer = String()
-    var minutes = 0
-    var hours = 0
     static let shared = TimerViewModel()
-    var hourString = ""
-    var minString = ""
-    var secondString = ""
-    var delegate: sendingTimerData?
-    
+      
     ///timer action
     @objc func timerAction(){
         seconds += 1
@@ -34,13 +24,14 @@ class TimerViewModel {
         if seconds >= 60 {
                     mins = Int(seconds / 60)
                     secs = seconds - (mins * 60)
-            delegate?.data(hour: 0, minutes: (mins), second: secs)
             debugPrint("time is :- \(mins): \(secs)")
         }else{
             debugPrint("time is :- \(seconds)")
         }
+        NotificationCenter.default.post(name: Notification.Name("NotificationIdentifier"), object: nil, userInfo: ["minutes":mins,"second":secs])
     }
     
+    ///func to start timer
     func startTimer(){
         timer.invalidate()
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(timerAction), userInfo: nil, repeats: true)
@@ -52,5 +43,15 @@ class TimerViewModel {
         seconds = 0
     }
     
+    ///func to pause timer
+    func pauseTimer(){
+        timer.invalidate()
+    }
+    
+    ///func for resume timer
+    func resumeTimer(){
+        timer.invalidate()
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(timerAction), userInfo: nil, repeats: true)
+    }
     
 }
